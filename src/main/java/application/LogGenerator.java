@@ -1,5 +1,8 @@
 package application;
 
+import application.ConfigurationUtility;
+import application.StatisticsGenerator;
+
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.VirtualMachine;
 

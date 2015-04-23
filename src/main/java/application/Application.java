@@ -2,6 +2,10 @@ package application;
 
 import java.io.IOException;
 
+import application.ConfigurationUtility;
+import application.LogGenerator;
+import application.StatisticsGenerator;
+
 public class Application {
 
 	public static void main(String[] args) throws IOException {

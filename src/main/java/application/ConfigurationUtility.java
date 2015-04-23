@@ -24,7 +24,7 @@ public class ConfigurationUtility {
 	public static final String LOG_STORAGE_PATH = System
 			.getProperty("user.home") + "/Desktop/logs/";
 
-	public static final String VM_NAME = "Test_VM";
+	public static final String VM_NAME = "Test_VM";  //can take this from command prompt
 
 	public synchronized List<HostSystem> getHostSystems() {
 		return hostSystems;

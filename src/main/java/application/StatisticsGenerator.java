@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
+import application.ConfigurationUtility;
+
 import com.vmware.vim25.PerfCounterInfo;
 import com.vmware.vim25.PerfEntityMetricBase;
 import com.vmware.vim25.PerfEntityMetricCSV;
