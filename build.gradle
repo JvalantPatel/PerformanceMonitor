@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-milestone" }
+        mavenLocal()
+    }
+    dependencies {
+        
+    }
+}
+
+apply plugin: 'java'
+
+
+jar {
+    baseName = 'PerformanceMonitor'
+    version =  '1.0'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-milestone" }
+}
+
+configurations {
+    providedRuntime
+}
+
+dependencies {
+    providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
+    compile("com.vmware:vijava:5.1")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
