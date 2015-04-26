@@ -23,8 +23,7 @@ public class ConfigurationUtility {
 
 	private static List<HostSystem> hostSystems;
 
-	public static final String LOG_STORAGE_PATH = System
-			.getProperty("user.home") + "/Desktop/";
+	public static final String LOG_STORAGE_PATH = "/tmp/";
 
 	public static  String VM_NAME = "VM-Logstash-Test";  //can take this from command prompt
 
