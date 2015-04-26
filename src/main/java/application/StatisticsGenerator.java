@@ -26,6 +26,7 @@ public class StatisticsGenerator {
 	public static String generate(ManagedEntity managedEntity) throws FileNotFoundException, RuntimeFault, RemoteException{
 		PerfProviderSummary pps = ConfigurationUtility.getPerformanceManager().queryPerfProviderSummary(managedEntity);
 		int refreshRate = pps.getRefreshRate().intValue();
+		System.out.println("refreshRate -"+refreshRate);
 		// only return the latest one sample
 		PerfQuerySpec qSpec = createPerfQuerySpec(managedEntity, 1, refreshRate);
 
@@ -92,9 +93,12 @@ public class StatisticsGenerator {
 				stats.put(csvs[i].getId().getCounterId(), csvs[i]);
 			}
 			buffer.setLength(0);
+			System.out.println(managedEntity.getName());
+			System.out.println(pem.getSampleInfoCSV().split(",")[1]);
 			buffer.append(managedEntity.getName()).append(",");
-			buffer.append(pem.getSampleInfoCSV()).append(",");
+			buffer.append(pem.getSampleInfoCSV().split(",")[1]).append(",");
 			for (String counter : ConfigurationUtility.getPerformanceCounters()) {
+				
 				Integer counterId = countersMap.get(counter);
 				String value = null;
 				System.out.println("Counter id: " + counterId);
@@ -104,7 +108,7 @@ public class StatisticsGenerator {
 						|| value.length() == 0) {
 					value = "0";
 				}
-
+				System.out.println("key:"+counter+" value: "+value);
 				buffer.append(value).append(",");
 			}
 			buffer.deleteCharAt(buffer.length() - 1);

@@ -9,11 +9,20 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin:'eclipse'
 
 
-jar {
-    baseName = 'PerformanceMonitor'
-    version =  '1.0'
+version = '1.0'
+
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File',  
+        	'Implementation-Version': version,
+        	'Main-Class': 'application.Application'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 repositories {

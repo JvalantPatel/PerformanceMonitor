@@ -3,7 +3,9 @@ package application;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +24,9 @@ public class ConfigurationUtility {
 	private static List<HostSystem> hostSystems;
 
 	public static final String LOG_STORAGE_PATH = System
-			.getProperty("user.home") + "/Desktop/logs/";
+			.getProperty("user.home") + "/Desktop/";
 
-	public static final String VM_NAME = "Test_VM";  //can take this from command prompt
+	public static  String VM_NAME = "VM-Logstash-Test";  //can take this from command prompt
 
 	public synchronized List<HostSystem> getHostSystems() {
 		return hostSystems;
@@ -36,7 +38,7 @@ public class ConfigurationUtility {
 	private static InventoryNavigator inventoryNavigator;
 	
 	private static final String[] performanceCounters = { "cpu.usage.average", "mem.usage.average",
-														 "net.usage.average", "disk.usage.average" };
+														 "net.usage.average", "disk.read.average","disk.write.average" };
 	
 	private static PerformanceManager performanceManager;
 	private static PrintStream outStream;
@@ -70,8 +72,11 @@ public class ConfigurationUtility {
 			
 			performanceManager = serviceInstance.getPerformanceManager();
 			outStream = new PrintStream(new FileOutputStream(
-					LOG_STORAGE_PATH + VM_NAME
+					LOG_STORAGE_PATH + "VM"
 					+ "-log.txt", true));
+			String vmname = setVirtualMachineName();
+			if(vmname!=null)
+				VM_NAME = vmname;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -135,7 +140,7 @@ public class ConfigurationUtility {
 		if(outStream==null){
 			try {
 				outStream= new PrintStream(new FileOutputStream(
-					LOG_STORAGE_PATH + VM_NAME
+					LOG_STORAGE_PATH + "VM"
 							+ "-log.txt", true));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -163,5 +168,40 @@ public class ConfigurationUtility {
 	 * System.out.println("Remote Exception while connecting"); } } return
 	 * instance; }
 	 */
-
+	private static String setVirtualMachineName(){
+		
+		InetAddress iAddress = null;
+		try {
+			iAddress = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String currentIp = iAddress.getHostAddress();
+		
+		ManagedEntity[] hosts = null;
+		try {
+			hosts = inventoryNavigator.searchManagedEntities("VirtualMachine");
+		} catch (InvalidProperty e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RuntimeFault e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (int i = 0; i < hosts.length; i++) {
+			VirtualMachine vm = (VirtualMachine) hosts[i];
+			if(!vm.getConfig().template){
+			if(vm.getGuest().getIpAddress().equals(currentIp)){
+				String vmName = vm.getName();
+				return vmName;
+			}
+			}
+		}
+		
+		return null;
+	}
 }
