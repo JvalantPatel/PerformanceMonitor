@@ -74,6 +74,7 @@ public class ConfigurationUtility {
 					LOG_STORAGE_PATH + "VM"
 					+ "-log.txt", true));
 			String vmname = setVirtualMachineName();
+			System.out.println("vm name from mehod : "+vmname); 
 			if(vmname!=null)
 				VM_NAME = vmname;
 
@@ -177,7 +178,7 @@ public class ConfigurationUtility {
 			e.printStackTrace();
 		}
 		String currentIp = iAddress.getHostAddress();
-		
+		System.out.println("ip from code:" +currentIp);
 		ManagedEntity[] hosts = null;
 		try {
 			hosts = inventoryNavigator.searchManagedEntities("VirtualMachine");
@@ -194,7 +195,9 @@ public class ConfigurationUtility {
 		for (int i = 0; i < hosts.length; i++) {
 			VirtualMachine vm = (VirtualMachine) hosts[i];
 			if(!vm.getConfig().template){
+				System.out.println("ip of VM :"+vm.getGuest().getIpAddress());
 			if(vm.getGuest().getIpAddress().equals(currentIp)){
+				System.out.println(vm.getName());
 				String vmName = vm.getName();
 				return vmName;
 			}
