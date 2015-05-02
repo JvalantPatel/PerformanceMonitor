@@ -21,7 +21,7 @@ public class LogGenerator extends Thread{
 				buffer.append(StatisticsGenerator.generate(vHost));
 				ConfigurationUtility.writeLog(buffer.toString());
 				buffer.setLength(0);    //clearing buffer
-				Thread.sleep(21000);     //21 sec waiting period as 
+				Thread.sleep(50000);     //21 sec waiting period as 
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

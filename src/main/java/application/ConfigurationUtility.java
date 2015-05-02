@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import com.vmware.vim25.InvalidProperty;
 import com.vmware.vim25.RuntimeFault;
@@ -24,21 +25,24 @@ public class ConfigurationUtility {
 	private static List<HostSystem> hostSystems;
 
 	public static final String LOG_STORAGE_PATH = "/tmp/";
+	/*public static final String LOG_STORAGE_PATH = System.getProperty("user.home")+ "/Desktop/";*/
 
-	public static  String VM_NAME = "VM-Logstash-Test";  //can take this from command prompt
+	public static String VM_NAME = "VM-Logstash-Test"; // can take this from
+														// command prompt
 
 	public synchronized List<HostSystem> getHostSystems() {
 		return hostSystems;
 	}
 
-	//private static ConfigurationUtility instance;
+	// private static ConfigurationUtility instance;
 	private static ServiceInstance serviceInstance;
 	private static ServiceInstance adminServiceInstance;
 	private static InventoryNavigator inventoryNavigator;
-	
-	private static final String[] performanceCounters = { "cpu.usage.average", "mem.usage.average",
-														 "net.usage.average", "disk.read.average","disk.write.average" };
-	
+
+	private static final String[] performanceCounters = { "cpu.usage.average",
+			"mem.usage.average", "net.usage.average", "disk.read.average",
+			"disk.write.average" };
+
 	private static PerformanceManager performanceManager;
 	private static PrintStream outStream;
 
@@ -52,7 +56,6 @@ public class ConfigurationUtility {
 	public static PerformanceManager getPerformanceManager() {
 		return performanceManager;
 	}
-
 
 	public static void init() {
 		hostSystems = new ArrayList<HostSystem>();
@@ -68,15 +71,16 @@ public class ConfigurationUtility {
 
 			inventoryNavigator = new InventoryNavigator(
 					serviceInstance.getRootFolder());
-			
+
 			performanceManager = serviceInstance.getPerformanceManager();
-			outStream = new PrintStream(new FileOutputStream(
-					LOG_STORAGE_PATH + "VM"
-					+ "-log.txt", true));
-			String vmname = setVirtualMachineName();
-			System.out.println("vm name from mehod : "+vmname); 
-			if(vmname!=null)
-				VM_NAME = vmname;
+			outStream = new PrintStream(new FileOutputStream(LOG_STORAGE_PATH
+					+ "VM" + "-log.txt", true));
+			/*String vmname = setVirtualMachineName();
+			System.out.println("vm name from mehod : " + vmname);
+			if (vmname != null || "".equalsIgnoreCase(vmname)) {*/
+				String vmname = setVMNameFromUser();
+			//}
+			VM_NAME = vmname;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -96,8 +100,8 @@ public class ConfigurationUtility {
 
 		VirtualMachine vm = null;
 		try {
-			vm = (VirtualMachine) inventoryNavigator
-					.searchManagedEntity("VirtualMachine", VM_NAME);
+			vm = (VirtualMachine) inventoryNavigator.searchManagedEntity(
+					"VirtualMachine", VM_NAME);
 		} catch (InvalidProperty e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,19 +115,20 @@ public class ConfigurationUtility {
 		return vm;
 
 	}
-	
+
 	public static HostSystem getvHost() {
 
 		HostSystem vmHost = null;
 		try {
-			ManagedEntity[] hosts = inventoryNavigator.searchManagedEntities("HostSystem");
+			ManagedEntity[] hosts = inventoryNavigator
+					.searchManagedEntities("HostSystem");
 			for (int i = 0; i < hosts.length; i++) {
 				HostSystem host = (HostSystem) hosts[i];
 				VirtualMachine vms[] = host.getVms();
 				for (int p = 0; p < vms.length; p++) {
 					VirtualMachine v = (VirtualMachine) vms[p];
-					if ((v.getName().toLowerCase())
-							.equals(VM_NAME.toLowerCase())) {
+					if ((v.getName().toLowerCase()).equals(VM_NAME
+							.toLowerCase())) {
 						vmHost = host;
 						break;
 					}
@@ -135,24 +140,22 @@ public class ConfigurationUtility {
 		return vmHost;
 
 	}
-	
-	public static void writeLog(String inputLogs){
-		if(outStream==null){
+
+	public static void writeLog(String inputLogs) {
+		if (outStream == null) {
 			try {
-				outStream= new PrintStream(new FileOutputStream(
-					LOG_STORAGE_PATH + "VM"
-							+ "-log.txt", true));
+				outStream = new PrintStream(new FileOutputStream(
+						LOG_STORAGE_PATH + "VM" + "-log.txt", true));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				System.out.println("Given file path is not valid !");
 				e.printStackTrace();
 			}
 		}
-	
-		outStream.append(inputLogs);
-		
-	}
 
+		outStream.append(inputLogs);
+
+	}
 
 	public static String[] getPerformanceCounters() {
 		// TODO Auto-generated method stub
@@ -160,16 +163,16 @@ public class ConfigurationUtility {
 	}
 
 	/*
-	 * public static ConfigurationUtility getInstance(){ if(instance==null){ try {
-	 * instance = new ConfigurationUtility(); } catch (MalformedURLException e) {
-	 * // TODO Auto-generated catch block //e.printStackTrace();
+	 * public static ConfigurationUtility getInstance(){ if(instance==null){ try
+	 * { instance = new ConfigurationUtility(); } catch (MalformedURLException
+	 * e) { // TODO Auto-generated catch block //e.printStackTrace();
 	 * System.out.println("Malformed URL Exception"); } catch (RemoteException
 	 * e) { // TODO Auto-generated catch block //e.printStackTrace();
 	 * System.out.println("Remote Exception while connecting"); } } return
 	 * instance; }
 	 */
-	private static String setVirtualMachineName(){
-		
+	private static String setVirtualMachineName() {
+
 		InetAddress iAddress = null;
 		try {
 			iAddress = InetAddress.getLocalHost();
@@ -178,7 +181,7 @@ public class ConfigurationUtility {
 			e.printStackTrace();
 		}
 		String currentIp = iAddress.getHostAddress();
-		System.out.println("ip from code:" +currentIp);
+		System.out.println("ip from code:" + currentIp);
 		ManagedEntity[] hosts = null;
 		try {
 			hosts = inventoryNavigator.searchManagedEntities("VirtualMachine");
@@ -194,16 +197,23 @@ public class ConfigurationUtility {
 		}
 		for (int i = 0; i < hosts.length; i++) {
 			VirtualMachine vm = (VirtualMachine) hosts[i];
-			if(!vm.getConfig().template){
-				System.out.println("ip of VM :"+vm.getGuest().getIpAddress());
-			if(vm.getGuest().getIpAddress().equals(currentIp)){
-				System.out.println(vm.getName());
-				String vmName = vm.getName();
-				return vmName;
-			}
+			if (!vm.getConfig().template) {
+				System.out.println("ip of VM :" + vm.getGuest().getIpAddress());
+				if (vm.getGuest().getIpAddress().equals(currentIp)) {
+					System.out.println(vm.getName());
+					String vmName = vm.getName();
+					return vmName;
+				}
 			}
 		}
-		
+
 		return null;
+	}
+
+	private static String setVMNameFromUser() {
+		System.out.print("Enter VM name : ");
+		Scanner in = new Scanner(System.in);
+		String vmName = in.nextLine();
+		return vmName;
 	}
 }
