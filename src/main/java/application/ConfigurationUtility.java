@@ -57,7 +57,7 @@ public class ConfigurationUtility {
 		return performanceManager;
 	}
 
-	public static void init() {
+	public static void init(String vmName) {
 		hostSystems = new ArrayList<HostSystem>();
 		URL url;
 		try {
@@ -78,9 +78,9 @@ public class ConfigurationUtility {
 			/*String vmname = setVirtualMachineName();
 			System.out.println("vm name from mehod : " + vmname);
 			if (vmname != null || "".equalsIgnoreCase(vmname)) {*/
-				String vmname = setVMNameFromUser();
+				//String vmname = setVMNameFromUser();
 			//}
-			VM_NAME = vmname;
+			VM_NAME = vmName;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

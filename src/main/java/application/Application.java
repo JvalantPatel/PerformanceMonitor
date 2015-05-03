@@ -10,7 +10,7 @@ public class Application {
 
 	public static void main(String[] args) throws IOException {
 			
-		ConfigurationUtility.init();   //Initializing Configuration Utility
+		ConfigurationUtility.init(args[0]);   //Initializing Configuration Utility
 		StatisticsGenerator.init();    //Initializing Statistics Generator
 		
 		LogGenerator logGenerator = new LogGenerator();
